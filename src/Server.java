@@ -47,13 +47,17 @@ public class Server {
     public void setListOfFiles(ArrayList<String> listOfFiles) {
         this.listOfFiles = listOfFiles;
     }
-    public static void reader(String path) throws IOException {
+    public void reader(String path,int env) throws IOException {
         BufferedReader buffRead = new BufferedReader(new FileReader(path));
         String line = "";
         while (true) {
             if (line != null) {
-                System.out.println(line);
-
+                if(env ==0)
+                    System.out.println(line);
+                if(env == 1)
+                    listOfFiles.add(line);
+                if(env == 2)
+                    existingServers.add(line);
             } else
                 break;
             line = buffRead.readLine();
@@ -61,25 +65,50 @@ public class Server {
         buffRead.close();
     }
 
-    public static void writer(String path) throws IOException {
+    public static void writer(String path, String msg) throws IOException {
         BufferedWriter buffWrite = new BufferedWriter(new FileWriter(path));
-        String line = "";
-        Scanner in = new Scanner(System.in);
-        System.out.println("Escreva algo: ");
-        line = in.nextLine();
-        buffWrite.append(line + "\n");
+        if(msg.length() == 0) {
+            String line = "";
+            Scanner in = new Scanner(System.in);
+            System.out.println("Escreva algo: ");
+            line = in.nextLine();
+            buffWrite.append(line + "\n");
+        }else {
+            buffWrite.append(msg);
+        }
         buffWrite.close();
     }
     public void addFileToList(String path){
-        System.out.println(root+path);
         try{
-            listOfFiles.add(root+path);
+            listOfFiles.add(path);
+            writer(root+"ExistingFiles.txt",path);
         }catch (Throwable e){
             System.out.println("Não foi possível adcionar a lista\n"+e);
         }
     }
+    public  void getSavedFileList(){
+        try{
+            reader(root+"ExistingFiles.txt",1);
+        }catch (Throwable e){
+            System.out.println("Não foi possivel carregar arquivos existentes");
+        }
+    }
+    public void addServerToList(String path){
+        try{
+            existingServers.add(path);
+            writer(root+"ExistingServers.txt",path);
+        }catch (Throwable e){
+            System.out.println("Não foi possível adcionar a lista\n"+e);
+        }
+    }
+    public  void getSavedServerList(){
+        try{
+            reader(root+"ExistingServers.txt",1);
+        }catch (Throwable e){
+            System.out.println("Não foi possivel carregar servidores conhecidos");
+        }
+    }
     public String searchFile(String name){
-        name = root+name;
         for (int i = 0; i < listOfFiles.size(); i++) {
             if(listOfFiles.get(i).equals(name)){
                 return listOfFiles.get(i);
@@ -88,6 +117,7 @@ public class Server {
 
         return "O arquivo não existe";
     }
+
     public BufferedReader getFile(String path) throws IOException{
         BufferedReader buffRead = new BufferedReader(new FileReader(path));
         return buffRead;

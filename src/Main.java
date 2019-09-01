@@ -10,10 +10,9 @@ class Main {
     }
     public static void main(String[] args) throws IOException {
         Server server = new Server("localhost");
-        String path = "file.txt";
-        server.addFileToList(path);
-        String fileOfServer = server.searchFile("file.txt");
 
-        System.out.println(fileOfServer);
+        //String path = "gg.txt";
+        //server.addFileToList(path);
+        server.writer(server.root+"ExistingFiles.txt","");
     }
 }
